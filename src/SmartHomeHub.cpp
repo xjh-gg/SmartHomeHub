@@ -1,13 +1,13 @@
 #include "SmartHomeHub.h"
+#include <algorithm>
+#include <functional>
 using namespace std;
 
 SmartHomeHub::SmartHomeHub() {}
 
 // 析构时逐一释放设备；因基类析构是虚函数，能正确调用各子类析构
 SmartHomeHub::~SmartHomeHub() {
-    for (auto dev : devices) {
-        delete dev;
-    }
+    for_each(devices.begin(), devices.end(), [](SmartDevice* dev) { delete dev; });
     devices.clear();
 }
 
@@ -18,33 +18,32 @@ SmartHomeHub& SmartHomeHub::operator+(SmartDevice* dev) {
 
 void SmartHomeHub::turnOnAll() {
     cout << "\n=== 一键开启所有设备 ===" << endl;
-    for (auto dev : devices) dev->turnOn();
+    for_each(devices.begin(), devices.end(), mem_fn(&SmartDevice::turnOn));
 }
 
 void SmartHomeHub::turnOffAll() {
     cout << "\n=== 一键关闭所有设备 ===" << endl;
-    for (auto dev : devices) dev->turnOff();
+    for_each(devices.begin(), devices.end(), mem_fn(&SmartDevice::turnOff));
 }
 
 void SmartHomeHub::showAll() const {
     cout << "\n--- 设备状态总览 ---" << endl;
-    for (const auto dev : devices) dev->showStatus();
+    for_each(devices.begin(), devices.end(), mem_fn(&SmartDevice::showStatus));
 }
 
 SmartDevice* SmartHomeHub::findDevice(const string& id) const {
-    for (auto dev : devices) {
-        if (dev->getID() == id) return dev;
-    }
-    return nullptr;
+    auto it = find_if(devices.begin(), devices.end(),
+                      [&id](const SmartDevice* dev) { return dev->getID() == id; });
+    return it != devices.end() ? *it : nullptr;
 }
 
 bool SmartHomeHub::removeDevice(const string& id) {
-    for (auto it = devices.begin(); it != devices.end(); ++it) {
-        if ((*it)->getID() == id) {
-            delete *it;
-            devices.erase(it);
-            return true;
-        }
+    auto it = find_if(devices.begin(), devices.end(),
+                      [&id](SmartDevice* dev) { return dev->getID() == id; });
+    if (it != devices.end()) {
+        delete *it;
+        devices.erase(it);
+        return true;
     }
     return false;
 }
@@ -52,7 +51,7 @@ bool SmartHomeHub::removeDevice(const string& id) {
 // action 由调用方传入（通常是 Lambda），对每个设备执行同样的场景动作
 void SmartHomeHub::sceneMode(const string& mode, function<void(SmartDevice*)> action) {
     cout << "\n=== 执行场景: " << mode << " ===" << endl;
-    for (auto dev : devices) action(dev);
+    for_each(devices.begin(), devices.end(), action);
 }
 
 void SmartHomeHub::saveConfig(const string& filename) const {
@@ -61,7 +60,7 @@ void SmartHomeHub::saveConfig(const string& filename) const {
         cerr << "保存失败：无法创建文件" << endl;
         return;
     }
-    for (const auto dev : devices) dev->save(out);
+    for_each(devices.begin(), devices.end(), [&out](const SmartDevice* dev) { dev->save(out); });
     out.close();
     cout << "\n配置已保存至 " << filename << endl;
 }
@@ -74,9 +73,7 @@ void SmartHomeHub::loadConfig(const string& filename) {
     }
 
     // 清空当前设备
-    for (auto dev : devices) {
-        delete dev;
-    }
+    for_each(devices.begin(), devices.end(), [](SmartDevice* dev) { delete dev; });
     devices.clear();
 
     string type, id, name;
@@ -110,9 +107,7 @@ void SystemLogger::printReport(const SmartHomeHub& hub) {
     cout << "设备总数: " << hub.devices.size() << endl;
     cout << "在线设备: " << SmartDevice::getOnlineCount() << endl;
     cout << "----------------------------------" << endl;
-    for (const auto dev : hub.devices) {
-        dev->showStatus();
-    }
+    for_each(hub.devices.begin(), hub.devices.end(), mem_fn(&SmartDevice::showStatus));
     cout << "==================================" << endl;
 }
 
