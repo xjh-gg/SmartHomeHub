@@ -9,7 +9,7 @@
 ## 功能特性
 
 | 功能 | 说明 |
-|------|------|
+| ------ | ------ |
 | **多态设备管理** | 统一基类 `SmartDevice` 管理智能灯、空调、门锁，支持一键全开/全关 |
 | **单独设备控制** | 按设备 ID 精确控制，支持开/关、亮度/温度/锁定等专属操作 |
 | **场景模式联动** | 回家 / 睡眠 / 离家三种场景，通过 Lambda 批量调度设备 |
@@ -60,7 +60,7 @@ SmartHomeHub/
 
         ┌─────────────────────────────────────┐
         │           SmartHomeHub              │
-        │  vector<SmartDevice*> devices       │
+        │  vector<unique_ptr<SmartDevice>> devices │
         │  + operator+ (添加设备)              │
         │  + sceneMode() 场景联动 (Lambda)     │
         │  + save/load 配置持久化              │
@@ -80,7 +80,7 @@ SmartHomeHub/
 
 ### 环境要求
 
-- C++11 及以上编译器
+- C++14 及以上编译器
 - 支持 `g++` 和 `make`
 - 已在 WSL / Linux / macOS 终端环境验证
 
@@ -95,10 +95,11 @@ make
 或手动编译：
 
 ```bash
-g++ -std=c++11 -Wall -Iinclude src/main.cpp src/SmartDevice.cpp src/SmartHomeHub.cpp -o bin/smart_home
+g++ -std=c++14 -Wall -Iinclude src/main.cpp src/SmartDevice.cpp src/SmartHomeHub.cpp -o bin/smart_home
 ```
 
 编译完成后：
+
 - 中间文件在 `build/`
 - 可执行文件在 `bin/smart_home`
 
@@ -186,7 +187,7 @@ Lock LK01 大门门锁 1 0
 字段含义：
 
 | 列 | 说明 |
-|----|------|
+| ---- | ------ |
 | 第 1 列 | 设备类型：`Light` / `AC` / `Lock` |
 | 第 2 列 | 设备 ID |
 | 第 3 列 | 设备名称 |
@@ -198,14 +199,14 @@ Lock LK01 大门门锁 1 0
 ## 知识点映射
 
 | 课程知识 | 代码体现 |
-|----------|----------|
+| ---------- | ---------- |
 | **类与对象 / 封装** | 每个设备独立成类，私有属性 + 公有接口 |
 | **构造 / 析构** | 设备对象生命周期管理，Hub 析构自动释放所有设备 |
 | **初始化列表** | `const string deviceID` 必须在初始化列表赋值 |
 | **虚析构函数** | `virtual ~SmartDevice()` 防止内存泄漏 |
 | **纯虚函数 / 抽象类** | `turnOn() = 0` 等 |
 | **继承** | `SmartLight : public SmartDevice` |
-| **多态** | `vector<SmartDevice*>` 统一管理不同设备 |
+| **多态** | `vector<unique_ptr<SmartDevice>>` 统一管理不同设备 |
 | **运算符重载** | `operator+`, `operator++`, `operator<<` |
 | **友元** | `SystemLogger` 访问 `SmartHomeHub` 私有 `devices` |
 | **异常处理** | `try-catch` 捕获 `DeviceException` / `SecurityException` |
