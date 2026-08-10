@@ -1,4 +1,5 @@
 #include "SmartHomeHub.h"
+#include "DeviceFactory.h"
 #include <algorithm>
 #include <functional>
 #include <memory>
@@ -76,17 +77,9 @@ void SmartHomeHub::loadConfig(const string& filename) {
     bool power;
     int value;   // 灯读作亮度、空调读作温度；门锁不使用该字段
 
-    // 逐行解析配置，按类型重建对应的子类对象
+    // 逐行解析配置，使用工厂按类型重建对应的子类对象
     while (in >> type >> id >> name >> power >> value) {
-        unique_ptr<SmartDevice> dev;
-        if (type == "Light") {
-            dev = make_unique<SmartLight>(id, name, value);
-        } else if (type == "AC") {
-            dev = make_unique<SmartAC>(id, name, value);
-        } else if (type == "Lock") {
-            dev = make_unique<SmartLock>(id, name);
-        }
-
+        auto dev = DeviceFactory::create(type, id, name, value);
         if (dev) {
             if (power) dev->turnOn();
             devices.push_back(move(dev));

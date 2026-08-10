@@ -1,8 +1,8 @@
 CXX = g++
 CXXFLAGS = -std=c++14 -Wall -Iinclude
 TARGET = bin/smart_home
-SRCS = src/main.cpp src/SmartDevice.cpp src/SmartHomeHub.cpp
-OBJS = build/main.o build/SmartDevice.o build/SmartHomeHub.o
+SRCS = src/main.cpp src/SmartDevice.cpp src/SmartHomeHub.cpp src/DeviceFactory.cpp
+OBJS = build/main.o build/SmartDevice.o build/SmartHomeHub.o build/DeviceFactory.o
 
 all: $(TARGET)
 
