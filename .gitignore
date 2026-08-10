@@ -1,0 +1,17 @@
+# Build artifacts
+bin/
+build/
+*.o
+*.obj
+*.exe
+smart_home
+
+# Runtime configuration and logs
+*.cfg
+*.log
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*~
