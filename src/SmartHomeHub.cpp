@@ -77,9 +77,12 @@ void SmartHomeHub::loadConfig(const string& filename) {
     bool power;
     int value;   // 灯读作亮度、空调读作温度；门锁不使用该字段
 
-    // 逐行解析配置，使用工厂按类型重建对应的子类对象
+    // 逐行解析配置，使用抽象工厂 + 工厂查找器重建子类对象
     while (in >> type >> id >> name >> power >> value) {
-        auto dev = DeviceFactory::create(type, id, name, value);
+        auto factory = DeviceFactory::getFactory(type);
+        if (!factory) continue;
+
+        auto dev = factory->create(id, name, value);
         if (dev) {
             if (power) dev->turnOn();
             devices.push_back(move(dev));

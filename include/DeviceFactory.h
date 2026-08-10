@@ -5,19 +5,44 @@
 #include <memory>
 #include <string>
 
-// 简单工厂：集中管理所有 SmartDevice 派生对象的创建逻辑
-// 新增设备类型时，只需修改此处，无需改动 main.cpp 或 SmartHomeHub.cpp
+// 抽象工厂：定义设备创建的统一接口（对应课程第 11 章纯虚函数）
 class DeviceFactory {
 public:
-    // 根据类型字符串创建设备
-    // type: "Light" / "AC" / "Lock"
-    // value: Light=亮度, AC=温度, Lock 时忽略
-    // password: 仅 Lock 使用，为空时使用默认密码
-    static std::unique_ptr<SmartDevice> create(const std::string& type,
-                                                const std::string& id,
-                                                const std::string& name,
-                                                int value = 0,
-                                                const std::string& password = "");
+    virtual ~DeviceFactory() = default;
+
+    // 纯虚函数：由具体工厂实现对应的设备创建逻辑
+    virtual std::unique_ptr<SmartDevice> create(const std::string& id,
+                                                 const std::string& name,
+                                                 int value = 0,
+                                                 const std::string& password = "") = 0;
+
+    // 静态工厂查找器：根据类型字符串返回对应的具体工厂
+    static std::unique_ptr<DeviceFactory> getFactory(const std::string& type);
+};
+
+// 具体工厂：每个派生类负责创建一种设备（对应课程第 09/11 章继承 + 复写）
+class LightFactory : public DeviceFactory {
+public:
+    std::unique_ptr<SmartDevice> create(const std::string& id,
+                                         const std::string& name,
+                                         int value = 0,
+                                         const std::string& password = "") override;
+};
+
+class ACFactory : public DeviceFactory {
+public:
+    std::unique_ptr<SmartDevice> create(const std::string& id,
+                                         const std::string& name,
+                                         int value = 0,
+                                         const std::string& password = "") override;
+};
+
+class LockFactory : public DeviceFactory {
+public:
+    std::unique_ptr<SmartDevice> create(const std::string& id,
+                                         const std::string& name,
+                                         int value = 0,
+                                         const std::string& password = "") override;
 };
 
 #endif

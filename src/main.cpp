@@ -217,20 +217,20 @@ static void addDeviceMenu(SmartHomeHub& hub) {
     switch (type) {
         case 1: {
             int brightness = getInt("请输入初始亮度 (0-100): ", 0, 100);
-            hub + DeviceFactory::create("Light", id, name, brightness);
+            hub + LightFactory().create(id, name, brightness);
             cout << GREEN << "✅ 智能灯 [" << name << "] 添加成功！" << RESET << endl;
             break;
         }
         case 2: {
             int temp = getInt("请输入初始温度 (16-30): ", 16, 30);
-            hub + DeviceFactory::create("AC", id, name, temp);
+            hub + ACFactory().create(id, name, temp);
             cout << GREEN << "✅ 智能空调 [" << name << "] 添加成功！" << RESET << endl;
             break;
         }
         case 3: {
             string pwd = getString("请输入门锁密码: ", true);
             if (pwd.empty()) pwd = "123456";
-            hub + DeviceFactory::create("Lock", id, name, 0, pwd);
+            hub + LockFactory().create(id, name, 0, pwd);
             cout << GREEN << "✅ 智能门锁 [" << name << "] 添加成功！" << RESET << endl;
             break;
         }
@@ -319,11 +319,11 @@ static void sceneMenu(SmartHomeHub& hub) {
 int main() {
     SmartHomeHub hub;
 
-    // 预置一些设备，避免空列表
-    hub + DeviceFactory::create("Light", "L001", "客厅主灯", 80);
-    hub + DeviceFactory::create("Light", "L002", "书房灯", 60);
-    hub + DeviceFactory::create("AC", "AC01", "主卧空调", 26);
-    hub + DeviceFactory::create("Lock", "LK01", "大门门锁", 0, "888888");
+    // 预置一些设备，避免空列表（使用具体工厂创建）
+    hub + LightFactory().create("L001", "客厅主灯", 80);
+    hub + LightFactory().create("L002", "书房灯", 60);
+    hub + ACFactory().create("AC01", "主卧空调", 26);
+    hub + LockFactory().create("LK01", "大门门锁", 0, "888888");
 
     // 若存在上次保存的配置文件，则覆盖默认设备
     hub.loadConfig("smart_home.cfg");
