@@ -29,11 +29,13 @@
 SmartHomeHub/
 ├── include/
 │   ├── SmartDevice.h      # 抽象基类及派生类声明
-│   └── SmartHomeHub.h     # 控制中心声明
+│   ├── SmartHomeHub.h     # 控制中心声明
+│   └── DeviceFactory.h    # 设备工厂（集中创建设备）
 ├── src/
 │   ├── main.cpp           # 主函数 & 交互菜单
 │   ├── SmartDevice.cpp    # 设备类实现
-│   └── SmartHomeHub.cpp   # 控制中心实现
+│   ├── SmartHomeHub.cpp   # 控制中心实现
+│   └── DeviceFactory.cpp  # 设备工厂实现
 ├── build/                 # 编译中间文件（.o，自动生成）
 ├── bin/                   # 可执行文件（自动生成）
 ├── Makefile               # 编译脚本
@@ -208,12 +210,15 @@ Lock LK01 大门门锁 1 0
 | **继承** | `SmartLight : public SmartDevice` |
 | **多态** | `vector<unique_ptr<SmartDevice>>` 统一管理不同设备 |
 | **运算符重载** | `operator+`, `operator++`, `operator<<` |
+| **工厂模式** | `DeviceFactory::create()` 统一创建具体设备 |
 | **友元** | `SystemLogger` 访问 `SmartHomeHub` 私有 `devices` |
 | **异常处理** | `try-catch` 捕获 `DeviceException` / `SecurityException` |
 | **文件流** | `ofstream` 保存 `smart_home.cfg` |
 | **Lambda / std::function** | `sceneMode()` 批量操作设备 |
 | **const / static** | 设备 ID 只读、在线设备总数统计 |
-| **RAII** | `SmartHomeHub` 析构时统一 `delete` 所有设备 |
+| **RAII / 智能指针** | `unique_ptr` 自动管理设备内存 |
+| **工厂模式** | `DeviceFactory::create()` 集中创建设备 |
+| **设计原则** | 开闭原则：新增设备类型只需改工厂 |
 
 ---
 
@@ -222,6 +227,7 @@ Lock LK01 大门门锁 1 0
 - [x] 智能门锁：密码校验，连续错误 3 次自动锁定并抛 `SecurityException`
 - [x] 单独设备控制：按 ID 精准控制设备
 - [x] ANSI 终端美化：真清屏 + 颜色输出
+- [x] 工厂模式：集中管理设备创建
 - [ ] 定时任务：结合 `std::function` 实现延时关机
 - [ ] 设备联动规则：重载 `>>` 实现"开灯则联动开空调"
 - [ ] 二进制存档：`read() / write()` 防止配置被手动篡改
