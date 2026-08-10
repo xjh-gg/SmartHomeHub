@@ -36,6 +36,13 @@ protected:
 
 public:
     SmartDevice(const std::string& id, const std::string& n);
+
+    // 禁止拷贝与移动：设备对象通过指针管理，每个实例 ID 唯一
+    SmartDevice(const SmartDevice&) = delete;
+    SmartDevice& operator=(const SmartDevice&) = delete;
+    SmartDevice(SmartDevice&&) = delete;
+    SmartDevice& operator=(SmartDevice&&) = delete;
+
     virtual ~SmartDevice();       // 虚析构：保证通过基类指针 delete 时能调用子类析构
 
     // 纯虚函数：强制每个子类实现自己的版本（多态的核心）

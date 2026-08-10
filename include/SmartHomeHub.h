@@ -14,6 +14,10 @@ public:
     SmartHomeHub();
     ~SmartHomeHub();
 
+    // 禁止拷贝：Hub 拥有设备资源，拷贝会导致双重释放
+    SmartHomeHub(const SmartHomeHub&) = delete;
+    SmartHomeHub& operator=(const SmartHomeHub&) = delete;
+
     // 运算符重载：hub + 新设备 即可把设备加入管理列表
     SmartHomeHub& operator+(SmartDevice* dev);
 
