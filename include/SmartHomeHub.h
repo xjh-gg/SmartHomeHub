@@ -4,11 +4,12 @@
 #include "SmartDevice.h"
 #include <vector>
 #include <functional>
+#include <memory>
 
 // 智能家居控制中心：统一管理所有设备
 class SmartHomeHub {
-    // 基类指针容器：存放不同子类对象，运行时多态调用的关键
-    std::vector<SmartDevice*> devices;
+    // 智能指针容器：自动管理设备内存，运行时多态调用的关键
+    std::vector<std::unique_ptr<SmartDevice>> devices;
 
 public:
     SmartHomeHub();
@@ -18,8 +19,8 @@ public:
     SmartHomeHub(const SmartHomeHub&) = delete;
     SmartHomeHub& operator=(const SmartHomeHub&) = delete;
 
-    // 运算符重载：hub + 新设备 即可把设备加入管理列表
-    SmartHomeHub& operator+(SmartDevice* dev);
+    // 运算符重载：hub + 智能指针 即可把设备所有权移入管理列表
+    SmartHomeHub& operator+(std::unique_ptr<SmartDevice> dev);
 
     void turnOnAll();
     void turnOffAll();

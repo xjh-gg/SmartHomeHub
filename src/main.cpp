@@ -1,6 +1,7 @@
 #include "SmartHomeHub.h"
 #include <iostream>
 #include <limits>
+#include <memory>
 using namespace std;
 
 // ANSI 颜色定义（WSL/类 Unix 终端支持）
@@ -215,20 +216,20 @@ static void addDeviceMenu(SmartHomeHub& hub) {
     switch (type) {
         case 1: {
             int brightness = getInt("请输入初始亮度 (0-100): ", 0, 100);
-            hub + new SmartLight(id, name, brightness);
+            hub + make_unique<SmartLight>(id, name, brightness);
             cout << GREEN << "✅ 智能灯 [" << name << "] 添加成功！" << RESET << endl;
             break;
         }
         case 2: {
             int temp = getInt("请输入初始温度 (16-30): ", 16, 30);
-            hub + new SmartAC(id, name, temp);
+            hub + make_unique<SmartAC>(id, name, temp);
             cout << GREEN << "✅ 智能空调 [" << name << "] 添加成功！" << RESET << endl;
             break;
         }
         case 3: {
             string pwd = getString("请输入门锁密码: ", true);
             if (pwd.empty()) pwd = "123456";
-            hub + new SmartLock(id, name, pwd);
+            hub + make_unique<SmartLock>(id, name, pwd);
             cout << GREEN << "✅ 智能门锁 [" << name << "] 添加成功！" << RESET << endl;
             break;
         }
@@ -318,10 +319,10 @@ int main() {
     SmartHomeHub hub;
 
     // 预置一些设备，避免空列表
-    hub + new SmartLight("L001", "客厅主灯", 80);
-    hub + new SmartLight("L002", "书房灯", 60);
-    hub + new SmartAC("AC01", "主卧空调", 26);
-    hub + new SmartLock("LK01", "大门门锁", "888888");
+    hub + make_unique<SmartLight>("L001", "客厅主灯", 80);
+    hub + make_unique<SmartLight>("L002", "书房灯", 60);
+    hub + make_unique<SmartAC>("AC01", "主卧空调", 26);
+    hub + make_unique<SmartLock>("LK01", "大门门锁", "888888");
 
     // 若存在上次保存的配置文件，则覆盖默认设备
     hub.loadConfig("smart_home.cfg");
