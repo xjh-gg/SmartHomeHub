@@ -210,15 +210,15 @@ Lock LK01 大门门锁 1 0
 | **继承** | `SmartLight : public SmartDevice` |
 | **多态** | `vector<unique_ptr<SmartDevice>>` 统一管理不同设备 |
 | **运算符重载** | `operator+`, `operator++`, `operator<<` |
-| **工厂模式** | `DeviceFactory::create()` 统一创建具体设备 |
+| **工厂方法/抽象工厂** | `DeviceFactory` 纯虚接口 + 具体工厂重写 |
 | **友元** | `SystemLogger` 访问 `SmartHomeHub` 私有 `devices` |
 | **异常处理** | `try-catch` 捕获 `DeviceException` / `SecurityException` |
 | **文件流** | `ofstream` 保存 `smart_home.cfg` |
 | **Lambda / std::function** | `sceneMode()` 批量操作设备 |
 | **const / static** | 设备 ID 只读、在线设备总数统计 |
 | **RAII / 智能指针** | `unique_ptr` 自动管理设备内存 |
-| **工厂模式** | `DeviceFactory::create()` 集中创建设备 |
-| **设计原则** | 开闭原则：新增设备类型只需改工厂 |
+| **工厂方法/抽象工厂** | `DeviceFactory` 定义接口，`LightFactory/ACFactory/LockFactory` 具体实现 |
+| **设计原则** | 开闭原则：新增设备类型只需添加具体工厂 |
 
 ---
 
